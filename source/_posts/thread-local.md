@@ -128,7 +128,6 @@ static class ThreadLocalMap {
 ### 2. 弱引用玄机
 &emsp;&emsp;ThreadLocalMap的key为什么采用弱引用呢。首先我们知道弱引用的特性就是：发生gc的时候，当一个对象没有在被其他强引用引用时，它就会被回收。为了更加清晰的说明这个问题，我们画一个引用关系图：
 {% asset_img reference.png ThreadLocal引用关系图 %}
-![ThreadLocal引用关系图](reference.png)
 
 &emsp;&emsp;从图中我们可以看出，只要当前线程Thread不消亡，它就会一直持有ThreadLocalMap对象的引用。如果B失去对ThreadLocal对象的引用时，如果ThreadLocalMap的key是强引用的话，该ThreadLocal对象将一直无法回收，除非当前线程Thread被销毁。Thread如果是主线程，那ThreadLocal对象将持续整改运行周期，如果是线程池中的线程，短时间内也无法消亡。从而就会引发内存泄露。因此ThreadLocalMap的key采用弱引用就避免了这一问题。
 
